@@ -50,6 +50,8 @@ export async function GET(request: Request) {
         submittedAt: new Date(record.createdAt).toLocaleTimeString("en-US", {
           hour: "2-digit",
           minute: "2-digit",
+          second: "2-digit",
+          hour12: true,
         }),
         isEdit: false,
       });
@@ -67,6 +69,8 @@ export async function GET(request: Request) {
             submittedAt: new Date(edit.timestamp).toLocaleTimeString("en-US", {
               hour: "2-digit",
               minute: "2-digit",
+              second: "2-digit",
+              hour12: true,
             }),
             isEdit: true,
             previousValues: edit.previousValues,
