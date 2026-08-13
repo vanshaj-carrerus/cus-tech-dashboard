@@ -1,11 +1,12 @@
-import { Menu, RefreshCw } from "lucide-react";
+import { Menu, RefreshCw, LogOut } from "lucide-react";
 import Link from "next/link";
 
 interface DashboardHeaderProps {
   onRefresh?: () => void;
+  onLogout?: () => void;
 }
 
-export function DashboardHeader({ onRefresh }: DashboardHeaderProps) {
+export function DashboardHeader({ onRefresh, onLogout }: DashboardHeaderProps) {
   return (
     <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
       <div className="max-w-7xl mx-auto px-6 py-4">
@@ -33,14 +34,21 @@ export function DashboardHeader({ onRefresh }: DashboardHeaderProps) {
             </nav>
             <button
               onClick={onRefresh}
-              className="p-2 hover:bg-gray-100 rounded-lg transition-colors border border-gray-200"
+              className="p-2 hover:bg-gray-100 rounded-lg transition-colors text-gray-600 hover:text-gray-900"
               title="Refresh data"
             >
-              <RefreshCw className="w-5 h-5 text-gray-600 hover:text-gray-900" />
+              <RefreshCw className="w-5 h-5" />
             </button>
-            <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-              <Menu className="w-5 h-5 text-gray-600" />
-            </button>
+            {onLogout && (
+              <button
+                onClick={onLogout}
+                className="px-4 py-2 bg-red-600 text-white text-sm rounded-lg hover:bg-red-700 transition-colors flex items-center gap-2"
+                title="Logout"
+              >
+                <LogOut className="w-4 h-4" />
+                <span>Logout</span>
+              </button>
+            )}
           </div>
         </div>
       </div>
