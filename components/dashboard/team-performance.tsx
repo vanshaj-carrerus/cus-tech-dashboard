@@ -87,9 +87,14 @@ export function TeamPerformance({ refreshKey = 0 }: TeamPerformanceProps) {
     );
   }
 
-  // Use top and lowest performers from API (already sorted by priority: Interviews > Applications > Reach Outs)
-  const topPerformers = data.topPerformers;
-  const lowestPerformers = data.lowestPerformers;
+  // Get top 3 performers from API (already sorted by priority: Interviews > Applications > Reach Outs)
+  const top3Performers = data.topPerformers.slice(0, 3);
+  
+  // Get remaining candidates (all team members excluding top 3)
+  const top3Names = new Set(top3Performers.map(p => p.name));
+  const remainingCandidates = data.allTeamMembers.filter(
+    member => !top3Names.has(member.name)
+  );
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 w-full">
@@ -102,25 +107,25 @@ export function TeamPerformance({ refreshKey = 0 }: TeamPerformanceProps) {
           </div>
           <p className="text-sm md:text-lg text-gray-600 mt-1 md:mt-2 font-medium">Ranked by interviews, then applications, then reach outs</p>
         </div>
-        {topPerformers.length > 0 && (
+        {top3Performers.length > 0 && (
           <div className="bg-gradient-to-br from-amber-50 via-yellow-50 to-orange-50 border-b-2 border-amber-300 px-3 md:px-6 py-4 md:py-8 shadow-md hover:shadow-lg transition-shadow duration-300">
             <div className="flex items-center justify-between">
               <div className="flex-1">
                 <div className="inline-block bg-gradient-to-r from-amber-400 to-orange-400 text-white px-2 md:px-4 py-1 md:py-2 rounded-full text-xs md:text-sm font-bold mb-2 md:mb-3 shadow-md">🏆 TOP PERFORMER</div>
-                <h2 className="text-2xl md:text-4xl font-bold bg-gradient-to-r from-amber-900 to-orange-900 bg-clip-text text-transparent mb-1 md:mb-2">{topPerformers[0].name}</h2>
+                <h2 className="text-2xl md:text-4xl font-bold bg-gradient-to-r from-amber-900 to-orange-900 bg-clip-text text-transparent mb-1 md:mb-2">{top3Performers[0].name}</h2>
                 <p className="text-xs md:text-sm text-amber-700 font-semibold mb-3 md:mb-4">Leading the recruitment efforts</p>
                 <div className="flex gap-2 md:gap-6 flex-wrap">
                   <div className="bg-white/60 backdrop-blur rounded-lg px-2 md:px-4 py-2 md:py-3 border border-amber-200 hover:bg-white hover:shadow-md transition-all duration-200">
                     <p className="text-xs text-amber-600 font-bold uppercase tracking-wide">Interviews</p>
-                    <p className="text-xl md:text-3xl font-bold text-amber-900 mt-1">{topPerformers[0].interviews}</p>
+                    <p className="text-xl md:text-3xl font-bold text-amber-900 mt-1">{top3Performers[0].interviews}</p>
                   </div>
                   <div className="bg-white/60 backdrop-blur rounded-lg px-2 md:px-4 py-2 md:py-3 border border-amber-200 hover:bg-white hover:shadow-md transition-all duration-200">
                     <p className="text-xs text-amber-600 font-bold uppercase tracking-wide">Applications</p>
-                    <p className="text-xl md:text-3xl font-bold text-amber-900 mt-1">{topPerformers[0].applications}</p>
+                    <p className="text-xl md:text-3xl font-bold text-amber-900 mt-1">{top3Performers[0].applications}</p>
                   </div>
                   <div className="bg-white/60 backdrop-blur rounded-lg px-2 md:px-4 py-2 md:py-3 border border-amber-200 hover:bg-white hover:shadow-md transition-all duration-200">
                     <p className="text-xs text-amber-600 font-bold uppercase tracking-wide">Reach Outs</p>
-                    <p className="text-xl md:text-3xl font-bold text-amber-900 mt-1">{topPerformers[0].reachOuts}</p>
+                    <p className="text-xl md:text-3xl font-bold text-amber-900 mt-1">{top3Performers[0].reachOuts}</p>
                   </div>
                 </div>
               </div>
@@ -139,7 +144,7 @@ export function TeamPerformance({ refreshKey = 0 }: TeamPerformanceProps) {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {topPerformers.map((member, idx) => (
+              {top3Performers.map((member, idx) => (
                 <tr key={member.name} className="hover:bg-amber-50/50 transition-colors duration-200 border-b border-gray-100 last:border-b-0">
                   <td className="px-1 md:px-1.5 py-0.5 md:py-1.5 whitespace-nowrap">
                     <span className="inline-flex items-center justify-center w-5 h-5 md:w-6 md:h-6 rounded-full bg-gradient-to-br from-amber-300 to-orange-400 text-[10px] md:text-xs font-bold text-white shadow-md hover:shadow-lg transition-shadow duration-200">
@@ -174,25 +179,25 @@ export function TeamPerformance({ refreshKey = 0 }: TeamPerformanceProps) {
           </div>
           <p className="text-sm md:text-lg text-gray-600 mt-1 md:mt-2 font-medium">Team members who need coaching and support</p>
         </div>
-        {lowestPerformers.length > 0 && (
+        {remainingCandidates.length > 0 && (
           <div className="bg-gradient-to-br from-red-50 via-rose-50 to-pink-50 border-b-2 border-red-300 px-3 md:px-6 py-4 md:py-8 shadow-md hover:shadow-lg transition-shadow duration-300">
             <div className="flex items-center justify-between">
               <div className="flex-1">
                 <div className="inline-block bg-gradient-to-r from-red-400 to-rose-400 text-white px-2 md:px-4 py-1 md:py-2 rounded-full text-xs md:text-sm font-bold mb-2 md:mb-3 shadow-md">📊 NEEDS SUPPORT</div>
-                <h2 className="text-2xl md:text-4xl font-bold bg-gradient-to-r from-red-900 to-rose-900 bg-clip-text text-transparent mb-1 md:mb-2">{lowestPerformers[0].name}</h2>
+                <h2 className="text-2xl md:text-4xl font-bold bg-gradient-to-r from-red-900 to-rose-900 bg-clip-text text-transparent mb-1 md:mb-2">{remainingCandidates[0].name}</h2>
                 <p className="text-xs md:text-sm text-red-700 font-semibold mb-3 md:mb-4">Focus area for coaching and growth</p>
                 <div className="flex gap-2 md:gap-6 flex-wrap">
                   <div className="bg-white/60 backdrop-blur rounded-lg px-2 md:px-4 py-2 md:py-3 border border-red-200 hover:bg-white hover:shadow-md transition-all duration-200">
                     <p className="text-xs text-red-600 font-bold uppercase tracking-wide">Interviews</p>
-                    <p className="text-xl md:text-3xl font-bold text-red-900 mt-1">{lowestPerformers[0].interviews}</p>
+                    <p className="text-xl md:text-3xl font-bold text-red-900 mt-1">{remainingCandidates[0].interviews}</p>
                   </div>
                   <div className="bg-white/60 backdrop-blur rounded-lg px-2 md:px-4 py-2 md:py-3 border border-red-200 hover:bg-white hover:shadow-md transition-all duration-200">
                     <p className="text-xs text-red-600 font-bold uppercase tracking-wide">Applications</p>
-                    <p className="text-xl md:text-3xl font-bold text-red-900 mt-1">{lowestPerformers[0].applications}</p>
+                    <p className="text-xl md:text-3xl font-bold text-red-900 mt-1">{remainingCandidates[0].applications}</p>
                   </div>
                   <div className="bg-white/60 backdrop-blur rounded-lg px-2 md:px-4 py-2 md:py-3 border border-red-200 hover:bg-white hover:shadow-md transition-all duration-200">
                     <p className="text-xs text-red-600 font-bold uppercase tracking-wide">Reach Outs</p>
-                    <p className="text-xl md:text-3xl font-bold text-red-900 mt-1">{lowestPerformers[0].reachOuts}</p>
+                    <p className="text-xl md:text-3xl font-bold text-red-900 mt-1">{remainingCandidates[0].reachOuts}</p>
                   </div>
                 </div>
               </div>
@@ -211,7 +216,7 @@ export function TeamPerformance({ refreshKey = 0 }: TeamPerformanceProps) {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {lowestPerformers.map((member, idx) => (
+              {remainingCandidates.map((member, idx) => (
                 <tr key={member.name} className="hover:bg-red-50/50 transition-colors duration-200 border-b border-gray-100 last:border-b-0">
                   <td className="px-1 md:px-1.5 py-0.5 md:py-1.5 whitespace-nowrap">
                     <span className="inline-flex items-center justify-center w-5 h-5 md:w-6 md:h-6 rounded-full bg-gradient-to-br from-red-300 to-rose-400 text-[10px] md:text-xs font-bold text-white shadow-md hover:shadow-lg transition-shadow duration-200">
