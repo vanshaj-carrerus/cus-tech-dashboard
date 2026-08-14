@@ -90,11 +90,28 @@ export function TeamPerformance({ refreshKey = 0 }: TeamPerformanceProps) {
   // Get top 3 performers from API (already sorted by priority: Interviews > Applications > Reach Outs)
   const top3Performers = data.topPerformers.slice(0, 3);
   
-  // Get remaining candidates (all team members excluding top 3)
+  // Sort all team members by the same priority (Interviews > Applications > Reach Outs) for overall ranking
+  const sortedAllMembers = [...data.allTeamMembers].sort((a, b) => {
+    if (a.interviews !== b.interviews) {
+      return b.interviews - a.interviews;
+    }
+    if (a.applications !== b.applications) {
+      return b.applications - a.applications;
+    }
+    return b.reachOuts - a.reachOuts;
+  });
+  
+  // Get remaining candidates (all team members excluding top 3) with proper ranking
   const top3Names = new Set(top3Performers.map(p => p.name));
-  const remainingCandidates = data.allTeamMembers.filter(
-    member => !top3Names.has(member.name)
-  );
+  const allRemainingCandidates = sortedAllMembers
+    .filter(member => !top3Names.has(member.name))
+    .map((member, idx) => ({
+      ...member,
+      actualRank: idx + 4, // Start from 4 since top 3 are already ranked 1-3
+    }));
+  
+  // For "Needs Support" section, show lowest performers first (ascending by performance)
+  const remainingCandidates = [...allRemainingCandidates].reverse();
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 w-full">
@@ -216,11 +233,11 @@ export function TeamPerformance({ refreshKey = 0 }: TeamPerformanceProps) {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {remainingCandidates.map((member, idx) => (
+              {remainingCandidates.map((member) => (
                 <tr key={member.name} className="hover:bg-red-50/50 transition-colors duration-200 border-b border-gray-100 last:border-b-0">
                   <td className="px-1 md:px-1.5 py-0.5 md:py-1.5 whitespace-nowrap">
                     <span className="inline-flex items-center justify-center w-5 h-5 md:w-6 md:h-6 rounded-full bg-gradient-to-br from-red-300 to-rose-400 text-[10px] md:text-xs font-bold text-white shadow-md hover:shadow-lg transition-shadow duration-200">
-                      {idx + 1}
+                      {member.actualRank}
                     </span>
                   </td>
                   <td className="px-0.5 md:px-1.5 py-0.5 md:py-1.5 whitespace-nowrap">
