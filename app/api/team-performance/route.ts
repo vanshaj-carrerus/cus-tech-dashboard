@@ -8,9 +8,22 @@ export async function GET() {
 
     const collection = mongoose.connection.collection("daily_stats");
 
-    // Get all time stats grouped by team member
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    // Only count the current day so stale historical records do not remain visible
     const teamPerformance = await collection
       .aggregate([
+        {
+          $match: {
+            date: {
+              $gte: today,
+              $lt: tomorrow,
+            },
+          },
+        },
         {
           $group: {
             _id: "$teamMemberName",

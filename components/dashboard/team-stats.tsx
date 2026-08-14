@@ -228,6 +228,12 @@ export function TeamStats({ refreshKey = 0 }: TeamStatsProps) {
     };
 
     fetchStats();
+
+    const intervalId = window.setInterval(() => {
+      fetchStats();
+    }, 60000);
+
+    return () => window.clearInterval(intervalId);
   }, [refreshKey]);
 
   const fetchCandidateHistory = async (candidateName: string) => {
@@ -283,7 +289,7 @@ export function TeamStats({ refreshKey = 0 }: TeamStatsProps) {
     );
   }
 
-  if (!stats) {
+  if (!stats || stats.todayStats.length === 0) {
     return null;
   }
 
@@ -505,12 +511,6 @@ export function TeamStats({ refreshKey = 0 }: TeamStatsProps) {
               </tbody>
             </table>
           </div>
-        </div>
-      )}
-
-      {stats.todayStats.length === 0 && (
-        <div className="bg-white border border-gray-200 rounded-lg p-8 text-center">
-          <p className="text-gray-500">No submissions yet. Be the first to log your daily activity!</p>
         </div>
       )}
 
